@@ -10,7 +10,7 @@ import config
 import time
 
 TITLES = ["Software Engineer", "Test Engineer", "Computer programmer", "Computer Engineer", "Computer Analyst",
-          "Applications Programmer", "Technical Engineer", "Test Engineer"]
+          "Applications Programmer", "Technical Engineer", "Test Engineer", "Consultant"]
 Fi = ['£0', '£50', '£100', '£150', '£200', '£250', '£300', '£350', '£400', '£450', '£500', '£700', '£1000']
 
 email = config.EMAIL
@@ -26,12 +26,10 @@ StartDate = config.START
 radioBL = config.RADIO
 doesntExist = 0
 telematicRemover = 0
+tallyCounter = 0
 NoBProtection = config.PROTECTION
 
-print(value)
-print(car)
-print(miles)
-print(volExcess)
+
 
 x = 1000
 
@@ -49,6 +47,7 @@ driver.find_element_by_id('signInButton').click()
 # ///////////////////////////////////////////////// page 1 #/////////////////////////////////////////////////////////////////
 
 while x != 0:
+    tallyCounter = tallyCounter + 1
     url = 'https://www.moneysupermarket.com/shop/car-insurance/questionset/your-car#?new-journey'
 
     driver.get(url)
@@ -62,8 +61,7 @@ while x != 0:
         driver.find_element_by_xpath('//*[@id="usageTypeQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
     elif car == 3:
         driver.find_element_by_xpath('//*[@id="usageTypeQuestion"]/div[2]/fieldset/ul/li[3]/label').click()
-        driver.find_element_by_xpath(
-            '// *[ @ id = "businessUsageTypeQuestion"] / div[2] / fieldset / ul / li[1] / label').click()
+        driver.find_element_by_xpath('// *[ @ id = "businessUsageTypeQuestion"] / div[2] / fieldset / ul / li[1] / label').click()
         driver.find_element_by_name('businessMilesPerYear').send_keys(bMiles)
 
     driver.find_element_by_name('personalMilesPerYear').clear()
@@ -103,36 +101,32 @@ while x != 0:
     try:
         element = driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul')
     except NoSuchElementException:
-        print("doesnt exist")
-        print("Only drop down over here g")
         elements = driver.find_element_by_xpath('//*[@id="voluntaryExcess"]')
         Select(elements).select_by_index(volExcess)
         doesntExist = 1
 
     if doesntExist == 0:
 
-        print("in the drop downs we go")
-        print(radioBL)
+
+
         if radioBL == 1:
-            print("drop down 1 chosen")
+
             driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[1]/label').click()
 
         elif radioBL == 2:
-            print("drop down 2 chosen")
+
             driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
 
 
         elif radioBL == 3:
-            print("drop down 3 chosen")
+
             driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[3]/label').click()
 
         elif radioBL == 4:
-            print("drop down 4s chosen")
+
             driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[4]/label').click()
 
         else:
-            print("random drop down option chosen, from the radio button options")
-            print(nadVol)
             driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[5]/label').click()
             driver.implicitly_wait(1)
             element = driver.find_element_by_xpath('//*[@id="voluntaryExcess"]')
@@ -158,10 +152,10 @@ while x != 0:
     driver.find_element_by_xpath('//*[@id="motor-insurance"]/div/nav/div[1]/button/span').click()
 
 
-    time.sleep(20)
 
 
-    x = 0
+
+
 
     for y in range(0, 10):
         nonTele = "// *[ @ id = \"result-table\"] / li[" + str(y + 1) + "] / footer / div / div / section / div[3] / a"
@@ -169,35 +163,32 @@ while x != 0:
             element = driver.find_element_by_xpath(nonTele)
             text = element.text
             if text != 'More info':
-                print('not equal')
+
                 newElement = driver.find_elements_by_class_name('result-table__provider-image')[y]
+                newTextE = driver.find_elements_by_xpath('// *[ @ id = "annual-price-label"]')[y]
+
                 y = 10
                 break
         except NoSuchElementException:
-            print('not found')
+
             newElement = driver.find_elements_by_class_name('result-table__provider-image')[y]
+            newTextE = driver.find_elements_by_xpath('// *[ @ id = "annual-price-label"]')[y]
             y = 10
             break
 
-    newElement.click()
+
+    newText = newTextE.text
+
+    print(newText)
+
+
+
+    if len(newText) == 5:
+        x = 0
+        break
+    else:
+         x = x -1
 
 
 
 
-
-# //*[@id="result-table"]/li[1]/div[1]/ul/li[10]/div/button
-# //*[@id="result-table"]/li[6]/div[1]/ul/li[10]/div/button
-#
-# for y in range(1, 10):
-#     nonTele = "// *[ @ id = \"result-table\"] / li[" + str(y) + "] / footer / div / div / section / div[3] / a"
-#     nonTeleLink = "//*[@id=\"result-table\"]/li[" + str(y) + "]/div[1]/ul/li[10]/div/button"
-#
-#     try:
-#         element = driver.find_element_by_xpath(nonTele)
-#
-#     except NoSuchElementException:
-#         print("BOOM!")
-#         print(y)
-#         driver.find_element_by_xpath(nonTeleLink).click()
-#         x = 0
-#         break
