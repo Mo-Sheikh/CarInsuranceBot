@@ -14,7 +14,7 @@ import time
 TITLES = ["Software Engineer", "Test Engineer", "Computer programmer", "Computer Engineer", "Computer Analyst",
           "Applications Programmer", "Technical Engineer", "Test Engineer"]
 Fi = ['£0', '£50', '£100', '£150', '£200', '£250', '£300', '£350', '£400', '£450', '£500', '£700', '£1000']
-dates = ['Thursday 8th November (Today)', 'Friday 9th November (Tomorrow)', 'Saturday 10th November', '11th', '12th', '13th' '14th', '15th', '16th']
+
 
 
 email = config.EMAIL
@@ -23,9 +23,13 @@ value = config.VALUE
 car = config.CAR
 miles = config.milesD
 bMiles = config.buMiles
-volExcess = 5
+volExcess = config.EXCESS
 adVol = config.ADVOLUNTARY
+nadVol = config.NADVOLUNTARY
 StartDate = config.START
+radioBL = config.RADIO
+doesntExist = 0
+
 
 
 print(value)
@@ -49,6 +53,7 @@ driver.find_element_by_id('password').send_keys(password)
 driver.find_element_by_id('signInButton').click()
 
 
+#///////////////////////////////////////////////// page 1 #/////////////////////////////////////////////////////////////////
 
 while x != 0:
     url = 'https://www.moneysupermarket.com/shop/car-insurance/questionset/your-car#?new-journey'
@@ -76,8 +81,10 @@ while x != 0:
     driver.find_element_by_name('personalMilesPerYear').clear()
     driver.find_element_by_name('personalMilesPerYear').send_keys(miles)
 
-    driver.find_element_by_class_name('btn__text').click()
 
+
+#///////////////////////////////////         page 2      ///////////////////////////////////////////////////////////////////////////////
+    driver.find_element_by_class_name('btn__text').click()
     driver.implicitly_wait(2)
     driver.find_element_by_id('occupationField').clear()
     driver.find_element_by_id('occupationField').send_keys(random.choice(TITLES))
@@ -101,7 +108,53 @@ while x != 0:
 
     driver.find_element_by_xpath('//*[@id="saveConvictionQuestion"]/div[2]/div/button').click()
     driver.implicitly_wait(1)
+
+
+    #////////////////////////////////// Page 3 ////////////////////////////////////////////////////////
     driver.find_element_by_xpath('//*[@id="motor-insurance"]/div/nav/div[1]/button/span').click()
+
+
+    try:
+        element = driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul')
+    except NoSuchElementException:
+        print("doesnt exist")
+        print("Only drop down over here g")
+        elements = driver.find_element_by_xpath('//*[@id="voluntaryExcess"]')
+        Select(elements).select_by_index(volExcess)
+        doesntExist = 1
+
+
+
+    if doesntExist == 0:
+
+        print("in the drop downs we go")
+        print(radioBL)
+        if radioBL == 1:
+            print("drop down 1 chosen")
+            driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[1]/label').click()
+
+        elif radioBL == 2:
+            print("drop down 2 chosen")
+            driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
+
+
+        elif radioBL == 3:
+            print("drop down 3 chosen")
+            driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[3]/label').click()
+
+        elif radioBL == 4:
+            print("drop down 4s chosen")
+            driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[4]/label').click()
+
+        else:
+            print("random drop down option chosen, from the radio button options")
+            print(nadVol)
+            driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul/li[5]/label').click()
+            driver.implicitly_wait(1)
+            element = driver.find_element_by_xpath('//*[@id="voluntaryExcess"]')
+            driver.implicitly_wait(1)
+            Select(element).select_by_index(nadVol)
+
 
     driver.find_element_by_xpath('//*[@id="hasAdditionalDriverQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
 
@@ -109,21 +162,15 @@ while x != 0:
 
     Select(element).select_by_index(StartDate)
 
+    #////////////////////////////////// Retrieve quote button ////////////////////////////////////////////////////////
+
     driver.find_element_by_xpath('//*[@id="motor-insurance"]/div/nav/div[1]/button/span').click()
 
     time.sleep(20)
 
     x = 0
 
-for y in range (10):
 
-    element = driver.find_element_by_xpath('//*[@id="result-table"]/li')[y]
-
-    newElement = element.find_elements_by_class_name("result-table-row__footer")
-
-    if not newElement:
-        element = 0
-        driver.find_element_by_xpath(' // *[ @ id = "result-table"] / li[1] / div[1] / ul / li[10] / div / button').click()
 
 
 
