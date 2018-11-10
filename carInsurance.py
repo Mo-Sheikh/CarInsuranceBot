@@ -9,13 +9,9 @@ import random
 import config
 import time
 
-
-
 TITLES = ["Software Engineer", "Test Engineer", "Computer programmer", "Computer Engineer", "Computer Analyst",
           "Applications Programmer", "Technical Engineer", "Test Engineer"]
 Fi = ['£0', '£50', '£100', '£150', '£200', '£250', '£300', '£350', '£400', '£450', '£500', '£700', '£1000']
-
-
 
 email = config.EMAIL
 password = config.PASSWORD
@@ -29,14 +25,13 @@ nadVol = config.NADVOLUNTARY
 StartDate = config.START
 radioBL = config.RADIO
 doesntExist = 0
-
-
+telematicRemover = 0
+NoBProtection = config.PROTECTION
 
 print(value)
 print(car)
 print(miles)
 print(volExcess)
-
 
 x = 1000
 
@@ -47,18 +42,14 @@ driver = webdriver.Chrome("/Users/MohamedS/Downloads/chromedriver", options=opti
 
 driver.get(url)
 
-
 driver.find_element_by_id('emailAddress').send_keys(email)
 driver.find_element_by_id('password').send_keys(password)
 driver.find_element_by_id('signInButton').click()
 
-
-#///////////////////////////////////////////////// page 1 #/////////////////////////////////////////////////////////////////
+# ///////////////////////////////////////////////// page 1 #/////////////////////////////////////////////////////////////////
 
 while x != 0:
     url = 'https://www.moneysupermarket.com/shop/car-insurance/questionset/your-car#?new-journey'
-
-
 
     driver.get(url)
     driver.find_element_by_name('vehicleValue').clear()
@@ -71,19 +62,15 @@ while x != 0:
         driver.find_element_by_xpath('//*[@id="usageTypeQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
     elif car == 3:
         driver.find_element_by_xpath('//*[@id="usageTypeQuestion"]/div[2]/fieldset/ul/li[3]/label').click()
-        driver.find_element_by_xpath('// *[ @ id = "businessUsageTypeQuestion"] / div[2] / fieldset / ul / li[1] / label').click()
+        driver.find_element_by_xpath(
+            '// *[ @ id = "businessUsageTypeQuestion"] / div[2] / fieldset / ul / li[1] / label').click()
         driver.find_element_by_name('businessMilesPerYear').send_keys(bMiles)
-
-
-
 
     driver.find_element_by_name('personalMilesPerYear').clear()
     driver.find_element_by_name('personalMilesPerYear').clear()
     driver.find_element_by_name('personalMilesPerYear').send_keys(miles)
 
-
-
-#///////////////////////////////////         page 2      ///////////////////////////////////////////////////////////////////////////////
+    # ///////////////////////////////////         page 2      ///////////////////////////////////////////////////////////////////////////////
     driver.find_element_by_class_name('btn__text').click()
     driver.implicitly_wait(2)
     driver.find_element_by_id('occupationField').clear()
@@ -98,7 +85,8 @@ while x != 0:
     driver.find_element_by_xpath('//*[@id="drivingOffenceDate"]/input[1]').send_keys("22")
     driver.find_element_by_xpath('//*[@id="drivingOffenceDate"]/input[2]').send_keys("11")
     driver.find_element_by_xpath('//*[@id="drivingOffenceDate"]/input[3]').send_keys("2017")
-    driver.find_element_by_xpath('//*[@id="drivingOffencePenaltyPointsQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
+    driver.find_element_by_xpath(
+        '//*[@id="drivingOffencePenaltyPointsQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
     driver.implicitly_wait(2)
     driver.find_element_by_xpath('//*[@id="drivingOffencePaidFineQuestion"]/div[2]/fieldset/ul/li[1]/label').click()
     driver.implicitly_wait(1)
@@ -109,10 +97,8 @@ while x != 0:
     driver.find_element_by_xpath('//*[@id="saveConvictionQuestion"]/div[2]/div/button').click()
     driver.implicitly_wait(1)
 
-
-    #////////////////////////////////// Page 3 ////////////////////////////////////////////////////////
+    # ////////////////////////////////// Page 3 ////////////////////////////////////////////////////////
     driver.find_element_by_xpath('//*[@id="motor-insurance"]/div/nav/div[1]/button/span').click()
-
 
     try:
         element = driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul')
@@ -122,8 +108,6 @@ while x != 0:
         elements = driver.find_element_by_xpath('//*[@id="voluntaryExcess"]')
         Select(elements).select_by_index(volExcess)
         doesntExist = 1
-
-
 
     if doesntExist == 0:
 
@@ -155,6 +139,13 @@ while x != 0:
             driver.implicitly_wait(1)
             Select(element).select_by_index(nadVol)
 
+    if NoBProtection == 1:
+        driver.find_element_by_xpath(
+            '// *[ @ id = "protectedNoClaimsQuestion"] / div[2] / fieldset / ul / li[2] / label').click()
+
+    elif NoBProtection == 2:
+        driver.find_element_by_xpath(
+            '// *[ @ id = "protectedNoClaimsQuestion"] / div[2] / fieldset / ul / li[1] / label').click()
 
     driver.find_element_by_xpath('//*[@id="hasAdditionalDriverQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
 
@@ -162,21 +153,51 @@ while x != 0:
 
     Select(element).select_by_index(StartDate)
 
-    #////////////////////////////////// Retrieve quote button ////////////////////////////////////////////////////////
+    # ////////////////////////////////// Retrieve quote button ////////////////////////////////////////////////////////
 
     driver.find_element_by_xpath('//*[@id="motor-insurance"]/div/nav/div[1]/button/span').click()
 
+
     time.sleep(20)
+
 
     x = 0
 
+    for y in range(0, 10):
+        nonTele = "// *[ @ id = \"result-table\"] / li[" + str(y + 1) + "] / footer / div / div / section / div[3] / a"
+        try:
+            element = driver.find_element_by_xpath(nonTele)
+            text = element.text
+            if text != 'More info':
+                print('not equal')
+                newElement = driver.find_elements_by_class_name('result-table__provider-image')[y]
+                y = 10
+                break
+        except NoSuchElementException:
+            print('not found')
+            newElement = driver.find_elements_by_class_name('result-table__provider-image')[y]
+            y = 10
+            break
+
+    newElement.click()
 
 
 
 
 
-
-
-
-
-
+# //*[@id="result-table"]/li[1]/div[1]/ul/li[10]/div/button
+# //*[@id="result-table"]/li[6]/div[1]/ul/li[10]/div/button
+#
+# for y in range(1, 10):
+#     nonTele = "// *[ @ id = \"result-table\"] / li[" + str(y) + "] / footer / div / div / section / div[3] / a"
+#     nonTeleLink = "//*[@id=\"result-table\"]/li[" + str(y) + "]/div[1]/ul/li[10]/div/button"
+#
+#     try:
+#         element = driver.find_element_by_xpath(nonTele)
+#
+#     except NoSuchElementException:
+#         print("BOOM!")
+#         print(y)
+#         driver.find_element_by_xpath(nonTeleLink).click()
+#         x = 0
+#         break
