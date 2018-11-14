@@ -12,7 +12,7 @@ TITLES = ["Software Engineer", "Test Engineer", "Computer programmer", "Computer
           "Applications Programmer", "Technical Engineer", "Test Engineer", "Consultant"]
 
 jobs = 0
-Fi = ['£0', '£50', '£100', '£150', '£200', '£250', '£300', '£350', '£400', '£450', '£500', '£700', '£1000']
+Fi = ["£" + str(num) for num in range(0, 1050, 50)]
 
 email = config.EMAIL
 password = config.PASSWORD
@@ -37,24 +37,40 @@ options = webdriver.ChromeOptions()
 options.add_argument("--incognito")
 options.add_argument("--disable-gpu")
 options.add_argument("--window-size=1920x1080")
-driver = webdriver.Chrome("/Users/MohamedS/Downloads/chromedriver", options=options)
+driver = webdriver.Chrome("lib/chromedriver", options=options)
 
 driver.get(url)
 
-driver.find_element_by_id('emailAddress').send_keys(email)
-driver.find_element_by_id('password').send_keys(password)
-driver.find_element_by_id('signInButton').click()
+def insert_by_id(id, val):
+    driver.find_element_by_id(id).send_keys(val)
 
-# ///////////////////////////////////////////////// page 1 #/////////////////////////////////////////////////////////////////
+def login():
+   insert_by_id('emailAddress', email)
+   insert_by_id('password', password)
+   driver.find_element_by_id('signInButton').click()
+
+def replace_by_name(id, val):
+    driver.find_element_by_name(id).clear()
+    driver.find_element_by_name(id).send_keys(val)
+
+def replace_by_xpath(id, send_keys=False, val=None, **kwargs):
+    str = ""
+    for arg, value in kwargs.items():
+        str += value
+    if send_keys:
+        driver.find_element_by_xpath('//*[@id="{}"]{}'.format(id, str)).send_keys(val)
+    else:
+        driver.find_element_by_xpath('//*[@id="{}"]/{}'.format(id, str)).click()
+
+"""Page 1"""
+login()
 
 while x != 0:
     tallyCounter = tallyCounter + 1
     url = 'https://www.moneysupermarket.com/shop/car-insurance/questionset/your-car#?new-journey'
 
     driver.get(url)
-    driver.find_element_by_name('vehicleValue').clear()
-    driver.find_element_by_name('vehicleValue').send_keys(value)
-
+    replace_by_name('vehicleValue', value)
     value = value + 50
 
     if value == 9000:
@@ -78,15 +94,13 @@ while x != 0:
     if car == 3:
         car = 1
 
-    driver.find_element_by_name('personalMilesPerYear').clear()
-    driver.find_element_by_name('personalMilesPerYear').clear()
-    driver.find_element_by_name('personalMilesPerYear').send_keys(miles)
+    replace_by_name('personalMilesPerYear', miles)
     miles = miles + 50
 
     if miles == 13000:
         miles = 6500
 
-    # ///////////////////////////////////         page 2      ///////////////////////////////////////////////////////////////////////////////
+    """Page 2""" 
     driver.find_element_by_class_name('btn__text').click()
     driver.implicitly_wait(0.5)
     driver.find_element_by_id('occupationField').clear()
@@ -97,24 +111,42 @@ while x != 0:
         jobs = 1
         gc.collect()
 
-    driver.find_element_by_xpath('//*[@id="hasDrivingOffencesQuestion"]/div[2]/fieldset/ul/li[1]/label').click()
-    driver.find_element_by_xpath('//*[@id="drivingOffenceTypeQuestion"]/div[2]/fieldset/ul/li[1]/label').click()
-    driver.find_element_by_xpath('//*[@id="drivingOffenceCodeQuestion"]/div[2]/fieldset/ul/li[1]/label').click()
-    driver.find_element_by_xpath('//*[@id="drivingOffenceDate"]/input[1]').send_keys("22")
-    driver.find_element_by_xpath('//*[@id="drivingOffenceDate"]/input[2]').send_keys("11")
-    driver.find_element_by_xpath('//*[@id="drivingOffenceDate"]/input[3]').send_keys("2017")
-    driver.find_element_by_xpath(
-        '//*[@id="drivingOffencePenaltyPointsQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
-    driver.find_element_by_xpath('//*[@id="drivingOffencePaidFineQuestion"]/div[2]/fieldset/ul/li[1]/label').click()
-    driver.find_element_by_xpath('//*[@id="drivingOffenceFineAmount"]').send_keys("100")
+    def fill_offences():
+        offences = ["hasDrivingOffencesQuestion", "drivingOffenceTypeQuestion",
+                    "drivingOffenceCodeQuestion"]
 
-    driver.find_element_by_xpath('//*[@id="drivingOffenceBannedQuestion"]/div[2]/fieldset/ul/li[2]/label').click()
+        offence_date = {
+            "day": "22",
+            "month": "11",
+            "year": "2017"
+        }
 
-    driver.find_element_by_xpath('//*[@id="saveConvictionQuestion"]/div[2]/div/button').click()
+        for question in offences:
+            replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',                                            li='/li[1]', label='/label')
 
-    # ////////////////////////////////// Page 3 ////////////////////////////////////////////////////////
+        counter = 1
+        for k, v in offence_date.items():
+            replace_by_xpath(id="drivingOffenceDate", send_keys=True, val=v, input='/input[{}]'.format                             (str(counter)))
+            counter = counter + 1
 
-    driver.find_element_by_xpath('//*[@id="motor-insurance"]/div/nav/div[1]/button/span').click()
+        offences = ["drivingOffencePenaltyPointsQuestion", "drivingOffencePaidFineQuestion",
+                   "drivingOffenceFineAmount", "drivingOffenceBannedQuestion"]
+        fine = "100"
+
+        for question in offences:
+            if question == "drivingOffencePaidFineQuestion":
+                 replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',                                            li='/li[1]', label='/label')
+            elif question == "drivingOffenceFineAmount":
+                replace_by_xpath(id=question, send_keys=True, val=fine)
+            else:
+                replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',                                            li='/li[2]', label='/label')
+
+        replace_by_xpath(id="saveConvictionQuestion", div='div[2]/div', button='/button')
+
+    fill_offences()
+    """Page 3"""
+    replace_by_xpath(id="motor-insurance", div='/div', nav='/nav/div[1]', button='/button/span')
+
     try:
         element = driver.find_element_by_xpath('//*[@id="voluntaryExcessQuestion"]/div[2]/fieldset/ul')
     except NoSuchElementException:
