@@ -100,7 +100,7 @@ while x != 0:
     if miles == 13000:
         miles = 6500
 
-    """Page 2""" 
+    """Page 2"""
     driver.find_element_by_class_name('btn__text').click()
     driver.implicitly_wait(0.5)
     driver.find_element_by_id('occupationField').clear()
@@ -122,11 +122,13 @@ while x != 0:
         }
 
         for question in offences:
-            replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',                                            li='/li[1]', label='/label')
+            replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',
+                                 li='/li[1]', label='/label')
 
         counter = 1
         for k, v in offence_date.items():
-            replace_by_xpath(id="drivingOffenceDate", send_keys=True, val=v, input='/input[{}]'.format                             (str(counter)))
+            replace_by_xpath(id="drivingOffenceDate", send_keys=True, val=v,
+                                 input='/input[{}]'.format(str(counter)))
             counter = counter + 1
 
         offences = ["drivingOffencePenaltyPointsQuestion", "drivingOffencePaidFineQuestion",
@@ -135,11 +137,13 @@ while x != 0:
 
         for question in offences:
             if question == "drivingOffencePaidFineQuestion":
-                 replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',                                            li='/li[1]', label='/label')
+                 replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',
+                                            li='/li[1]', label='/label')
             elif question == "drivingOffenceFineAmount":
                 replace_by_xpath(id=question, send_keys=True, val=fine)
             else:
-                replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',                                            li='/li[2]', label='/label')
+                replace_by_xpath(id=question, div='div[2]', fieldset='/fieldset', ul='/ul',
+                                            li='/li[2]', label='/label')
 
         replace_by_xpath(id="saveConvictionQuestion", div='div[2]/div', button='/button')
 
